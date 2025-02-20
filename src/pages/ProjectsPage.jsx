@@ -9,7 +9,7 @@ import TaskForm from "../components/TaskForm";
 import TaskBar from "../components/TaskBar";
 
 const ProjectsPage = () => {
-  const url = "http://localhost:8080";
+  const url = import.meta.env.VITE_BACKEND_URL;
   const [team, setTeam] = useState(null);
   const [teams, setTeams] = useState([]);
   const [projects, setProjects] = useState([]);
