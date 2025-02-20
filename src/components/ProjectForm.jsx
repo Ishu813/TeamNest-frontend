@@ -32,6 +32,7 @@ const ProjectForm = ({ team }) => {
         { withCredentials: true }
       );
       setShowProjectsForm(false);
+      window.location.reload();
     } catch (error) {
       console.log("Error while creating the team:", error);
     }

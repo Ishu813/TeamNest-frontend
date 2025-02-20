@@ -37,6 +37,7 @@ const TaskBar = ({ task }) => {
         { id: task._id },
         { withCredentials: true }
       );
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting task:", error);
       alert("Failed to delete task!");
