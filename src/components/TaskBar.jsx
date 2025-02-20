@@ -18,6 +18,7 @@ const TaskBar = ({ task }) => {
         { taskId: task._id, isDone: newIsDone },
         { withCredentials: true }
       );
+      window.location.reload();
     } catch (error) {
       console.error("Error updating task:", error);
       alert("Failed to update task status!");
