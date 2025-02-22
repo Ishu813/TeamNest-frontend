@@ -34,14 +34,11 @@ TeamNest is a web application designed to enhance remote and hybrid work by enab
    ```sh
    npm install
    ```
-3. Start the development server:
+3. Create a `.env` file with the necessary configurations (DB connection, JWT secrets, etc.).
+4. Start the development server:
    ```sh
    npm run dev
    ```
-
-## Deployment
-
-The frontend is deployed at: [https://teamnest.netlify.app](https://teamnest.netlify.app)
 
 ## Contributing
 
