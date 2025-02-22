@@ -34,7 +34,7 @@ TeamNest is a web application designed to enhance remote and hybrid work by enab
    ```sh
    npm install
    ```
-3. Create a `.env` file with the necessary configurations (DB connection, JWT secrets, etc.).
+3. Create a `.env` file with the necessary configurations (Backend URL).
 4. Start the development server:
    ```sh
    npm run dev
