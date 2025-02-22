@@ -2,6 +2,9 @@
 
 TeamNest is a web application designed to enhance remote and hybrid work by enabling seamless team collaboration, messaging, and project/task management.
 
+- **Note**: This website is currently optimized for desktop use only.
+- **Prerequisite**: Ensure that you have allowed third-party cookies on Chrome and Disabled cross-site tracking prevention on Safari before logging in to TeamNest.
+
 ## Features
 
 - **User Authentication & Authorization**: Secure login and registration system.
