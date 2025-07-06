@@ -111,30 +111,15 @@ const ChatArea = ({ receiver, isTeam }) => {
         teamId: receiver._id,
         message,
       });
-      setChats((prev) => [
-        ...prev,
-        {
-          sender: sender.username,
-          message,
-          teamId: receiver._id,
-        },
-      ]);
     } else {
       socket.emit("private_message", {
         sender: sender.username,
         receiver: receiver.username,
         message,
       });
-      setChats((prev) => [
-        ...prev,
-        {
-          sender: sender.username,
-          message,
-          receiver: receiver.username,
-        },
-      ]);
     }
-    setMessage("");
+
+    setMessage(""); // ✅ Only clear input, don't push locally
   };
 
   return (
