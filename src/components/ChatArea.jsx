@@ -28,7 +28,7 @@ const ChatArea = ({ receiver, isTeam }) => {
     fetchUser();
   }, []);
 
-  // Fetch all chats (initial load)
+  // Fetch all chats on load
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -52,7 +52,7 @@ const ChatArea = ({ receiver, isTeam }) => {
     const handlePrivateMessage = ({ sender: from, message }) => {
       setChats((prev) => [
         ...prev,
-        { sender: from, message, receiver: sender.username },
+        { sender: from, receiver: sender.username, message },
       ]);
     };
 
@@ -112,15 +112,27 @@ const ChatArea = ({ receiver, isTeam }) => {
         teamId: receiver._id,
         message,
       });
+
+      // Optional: immediately push own message locally
+      setChats((prev) => [
+        ...prev,
+        { sender: sender.username, teamId: receiver._id, message },
+      ]);
     } else {
       socket.emit("private_message", {
         sender: sender.username,
         receiver: receiver.username,
         message,
       });
+
+      // Immediately show own sent message
+      setChats((prev) => [
+        ...prev,
+        { sender: sender.username, receiver: receiver.username, message },
+      ]);
     }
 
-    setMessage(""); // clear input only, no local message push
+    setMessage("");
   };
 
   return (
