@@ -4,6 +4,7 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import TeamBar from "./TeamBar";
 import axios from "axios";
 import UserBar from "./UserBar";
+import socket from "./socket"; // Adjust the import path as necessary
 
 const ChatArea = ({ receiver, isTeam }) => {
   const url = import.meta.env.VITE_BACKEND_URL;
@@ -12,6 +13,7 @@ const ChatArea = ({ receiver, isTeam }) => {
   const [chats, setChats] = useState([]);
   const [receiverChats, setReceiverChats] = useState([]);
 
+  // Fetch sender info
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -26,73 +28,113 @@ const ChatArea = ({ receiver, isTeam }) => {
     fetchUser();
   }, []);
 
+  // Fetch all chats (initial load)
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const res = await axios.get(`${url}/chats`, { withCredentials: true });
+        const res = await axios.get(`${url}/chats`, {
+          withCredentials: true,
+        });
         setChats(res.data);
       } catch (err) {
         console.error("Error fetching chats:", err);
       }
     };
-
     fetchChats();
-    const interval = setInterval(fetchChats, 3000); // Poll every 3 seconds
-    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
+  // Handle private messages
+  useEffect(() => {
+    if (sender && !isTeam && receiver) {
+      socket.emit("join", sender.username);
+
+      const handlePrivateMessage = ({ sender: from, message }) => {
+        setChats((prev) => [
+          ...prev,
+          { sender: from, message, receiver: sender.username },
+        ]);
+      };
+
+      socket.on("private_message", handlePrivateMessage);
+
+      return () => {
+        socket.off("private_message", handlePrivateMessage);
+      };
+    }
+  }, [receiver, sender, isTeam]);
+
+  // Handle group messages
+  useEffect(() => {
+    if (receiver?._id && isTeam) {
+      socket.emit("join-team", receiver._id);
+
+      const handleGroupMessage = ({ sender: from, message, teamId }) => {
+        if (teamId === receiver._id) {
+          setChats((prev) => [...prev, { sender: from, message, teamId }]);
+        }
+      };
+
+      socket.on("group-message", handleGroupMessage);
+
+      return () => {
+        socket.off("group-message", handleGroupMessage);
+      };
+    }
+  }, [receiver, isTeam]);
+
+  // Filter chats for this conversation
   useEffect(() => {
     if (!isTeam) {
       setReceiverChats(
         chats.filter(
           (chat) =>
             (receiver &&
-              chat.receiver?._id === receiver?._id &&
-              chat.sender?._id === sender?._id) ||
-            (chat.sender?._id === receiver?._id &&
-              chat.receiver?._id === sender?._id)
+              chat.receiver === receiver.username &&
+              chat.sender === sender?.username) ||
+            (chat.sender === receiver?.username &&
+              chat.receiver === sender?.username)
         )
       );
     } else {
-      setReceiverChats(
-        chats.filter((chat) => receiver && chat.teamId === receiver?._id)
-      );
+      setReceiverChats(chats.filter((chat) => chat.teamId === receiver?._id));
     }
-  }, [chats, receiver, sender]);
+  }, [chats, receiver, sender, isTeam]);
 
+  // Handle message sending
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim() || !sender || !receiver) return;
 
-    try {
-      if (isTeam) {
-        const res = await axios.post(
-          `${url}/chats`,
-          {
-            sender: sender._id,
-            message: message,
-            teamId: receiver?._id,
-          },
-          { withCredentials: true }
-        );
-        setChats([...chats, res.data]);
-      } else {
-        const res = await axios.post(
-          `${url}/chats`,
-          {
-            sender: sender._id,
-            message: message,
-            receiver: receiver?._id,
-          },
-          { withCredentials: true }
-        );
-        setChats([...chats, res.data]);
-      }
-
-      setMessage("");
-    } catch (err) {
-      console.error("Message send failed:", err.response?.data || err.message);
+    if (isTeam) {
+      socket.emit("group_message", {
+        sender: sender.username,
+        teamId: receiver._id,
+        message,
+      });
+      setChats((prev) => [
+        ...prev,
+        {
+          sender: sender.username,
+          message,
+          teamId: receiver._id,
+        },
+      ]);
+    } else {
+      socket.emit("private_message", {
+        sender: sender.username,
+        receiver: receiver.username,
+        message,
+      });
+      setChats((prev) => [
+        ...prev,
+        {
+          sender: sender.username,
+          message,
+          receiver: receiver.username,
+        },
+      ]);
     }
+    setMessage("");
   };
 
   return (
@@ -135,7 +177,7 @@ const ChatArea = ({ receiver, isTeam }) => {
               style={{
                 display: "flex",
                 justifyContent:
-                  chat.sender?._id === sender?._id ? "flex-end" : "flex-start", // Align messages
+                  chat.sender === sender?.username ? "flex-end" : "flex-start", // Align messages
                 marginBottom: "1rem",
               }}
             >
@@ -143,15 +185,15 @@ const ChatArea = ({ receiver, isTeam }) => {
                 style={{
                   padding: "1rem",
                   backgroundColor:
-                    chat.sender?._id === sender?._id ? "#3A3F58" : "#F4F5F7",
+                    chat.sender === sender?.username ? "#3A3F58" : "#F4F5F7",
                   borderRadius: "0.5rem",
-                  color: chat.sender?._id === sender?._id ? "white" : "black",
+                  color: chat.sender === sender?.username ? "white" : "black",
                   maxWidth: "60%",
                   wordWrap: "break-word",
                 }}
               >
                 <p style={{ paddingBottom: "1rem", opacity: "0.5" }}>
-                  {chat.sender?._id === sender?._id ? "You" : chat.sender?.name}
+                  {chat.sender === sender?.username ? "You" : chat.sender}
                 </p>
                 <p>{chat.message}</p>
               </div>
