@@ -45,63 +45,64 @@ const ChatArea = ({ receiver, isTeam }) => {
 
   // Handle private messages
   useEffect(() => {
-    if (sender && !isTeam && receiver) {
-      socket.emit("join", sender.username);
+    if (!sender || isTeam || !receiver) return;
 
-      const handlePrivateMessage = ({ sender: from, message }) => {
-        setChats((prev) => [
-          ...prev,
-          { sender: from, message, receiver: sender.username },
-        ]);
-      };
+    socket.emit("join", sender.username);
 
-      socket.on("private_message", handlePrivateMessage);
+    const handlePrivateMessage = ({ sender: from, message }) => {
+      setChats((prev) => [
+        ...prev,
+        { sender: from, message, receiver: sender.username },
+      ]);
+    };
 
-      return () => {
-        socket.off("private_message", handlePrivateMessage);
-      };
-    }
+    socket.on("private_message", handlePrivateMessage);
+
+    return () => {
+      socket.off("private_message", handlePrivateMessage);
+    };
   }, [receiver, sender, isTeam]);
 
   // Handle group messages
   useEffect(() => {
-    if (receiver?._id && isTeam) {
-      socket.emit("join-team", receiver._id);
+    if (!receiver?._id || !isTeam) return;
 
-      const handleGroupMessage = ({ sender: from, message, teamId }) => {
-        if (teamId === receiver._id) {
-          setChats((prev) => [...prev, { sender: from, message, teamId }]);
-        }
-      };
+    socket.emit("join-team", receiver._id);
 
-      socket.on("group-message", handleGroupMessage);
+    const handleGroupMessage = ({ sender: from, message, teamId }) => {
+      if (teamId === receiver._id) {
+        setChats((prev) => [...prev, { sender: from, message, teamId }]);
+      }
+    };
 
-      return () => {
-        socket.off("group-message", handleGroupMessage);
-      };
-    }
+    socket.on("group-message", handleGroupMessage);
+
+    return () => {
+      socket.off("group-message", handleGroupMessage);
+    };
   }, [receiver, isTeam]);
 
   // Filter chats for this conversation
   useEffect(() => {
+    if (!sender || !receiver) return;
+
     if (!isTeam) {
       setReceiverChats(
         chats.filter(
           (chat) =>
-            (receiver &&
-              chat.receiver === receiver.username &&
-              chat.sender === sender?.username) ||
-            (chat.sender === receiver?.username &&
-              chat.receiver === sender?.username)
+            (chat.receiver === receiver.username &&
+              chat.sender === sender.username) ||
+            (chat.receiver === sender.username &&
+              chat.sender === receiver.username)
         )
       );
     } else {
-      setReceiverChats(chats.filter((chat) => chat.teamId === receiver?._id));
+      setReceiverChats(chats.filter((chat) => chat.teamId === receiver._id));
     }
   }, [chats, receiver, sender, isTeam]);
 
   // Handle message sending
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!message.trim() || !sender || !receiver) return;
 
@@ -119,7 +120,7 @@ const ChatArea = ({ receiver, isTeam }) => {
       });
     }
 
-    setMessage(""); // ✅ Only clear input, don't push locally
+    setMessage(""); // clear input only, no local message push
   };
 
   return (
