@@ -112,12 +112,6 @@ const ChatArea = ({ receiver, isTeam }) => {
         teamId: receiver._id,
         message,
       });
-
-      // Optional: immediately push own message locally
-      setChats((prev) => [
-        ...prev,
-        { sender: sender.username, teamId: receiver._id, message },
-      ]);
     } else {
       socket.emit("private_message", {
         sender: sender.username,
@@ -169,9 +163,9 @@ const ChatArea = ({ receiver, isTeam }) => {
         }}
       >
         {receiverChats.length > 0 ? (
-          receiverChats.map((chat) => (
+          receiverChats.map((chat, idx) => (
             <div
-              key={chat._id}
+              key={idx}
               style={{
                 display: "flex",
                 justifyContent:
