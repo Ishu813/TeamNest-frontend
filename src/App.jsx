@@ -11,6 +11,7 @@ import ProjectsPage from "./pages/ProjectsPage";
 import Search from "./pages/Search";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ChatBot from "./pages/ChatBot";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route exact path="/search" element={<Search />} />
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
+        <Route exact path="/chatbot" element={<ChatBot />} />
       </Routes>
     </BrowserRouter>
   );

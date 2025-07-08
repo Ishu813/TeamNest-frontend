@@ -5,6 +5,7 @@ import {
   faUserGroup,
   faFile,
   faMagnifyingGlass,
+  faRobot,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = () => {
@@ -41,6 +42,9 @@ const Sidebar = () => {
       </a>
       <a style={{ color: "white", textDecoration: "none" }} href="/search">
         <FontAwesomeIcon icon={faMagnifyingGlass} />
+      </a>
+      <a style={{ color: "white", textDecoration: "none" }} href="/chatbot">
+        <FontAwesomeIcon icon={faRobot} />
       </a>
     </div>
   );
