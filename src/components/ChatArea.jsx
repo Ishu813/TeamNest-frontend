@@ -4,7 +4,10 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import TeamBar from "./TeamBar";
 import axios from "axios";
 import UserBar from "./UserBar";
-import socket from "./socket"; // Adjust the import path as necessary
+import socket from "./socket";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "my_super_secret_key_123";
 
 const ChatArea = ({ receiver, isTeam }) => {
   const url = import.meta.env.VITE_BACKEND_URL;
@@ -12,6 +15,15 @@ const ChatArea = ({ receiver, isTeam }) => {
   const [sender, setSender] = useState();
   const [chats, setChats] = useState([]);
   const [receiverChats, setReceiverChats] = useState([]);
+
+  const decryptMessage = (ciphertext) => {
+    try {
+      const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      return "Decryption Failed";
+    }
+  };
 
   // Fetch sender info
   useEffect(() => {
@@ -35,7 +47,13 @@ const ChatArea = ({ receiver, isTeam }) => {
         const res = await axios.get(`${url}/chats`, {
           withCredentials: true,
         });
-        setChats(res.data);
+
+        const decryptedChats = res.data.map((chat) => ({
+          ...chat,
+          message: decryptMessage(chat.message),
+        }));
+
+        setChats(decryptedChats);
       } catch (err) {
         console.error("Error fetching chats:", err);
       }
@@ -50,9 +68,10 @@ const ChatArea = ({ receiver, isTeam }) => {
     socket.emit("join", sender.username);
 
     const handlePrivateMessage = ({ sender: from, message }) => {
+      const decryptedMessage = decryptMessage(message);
       setChats((prev) => [
         ...prev,
-        { sender: from, receiver: sender.username, message },
+        { sender: from, receiver: sender.username, message: decryptedMessage },
       ]);
     };
 
@@ -71,7 +90,11 @@ const ChatArea = ({ receiver, isTeam }) => {
 
     const handleGroupMessage = ({ sender: from, message, teamId }) => {
       if (teamId === receiver._id) {
-        setChats((prev) => [...prev, { sender: from, message, teamId }]);
+        const decryptedMessage = decryptMessage(message);
+        setChats((prev) => [
+          ...prev,
+          { sender: from, message: decryptedMessage, teamId },
+        ]);
       }
     };
 
@@ -106,23 +129,32 @@ const ChatArea = ({ receiver, isTeam }) => {
     e.preventDefault();
     if (!message.trim() || !sender || !receiver) return;
 
+    const encryptedMessage = CryptoJS.AES.encrypt(
+      message,
+      SECRET_KEY
+    ).toString();
+
     if (isTeam) {
       socket.emit("group_message", {
         sender: sender.username,
         teamId: receiver._id,
-        message,
+        message: encryptedMessage,
       });
     } else {
       socket.emit("private_message", {
         sender: sender.username,
         receiver: receiver.username,
-        message,
+        message: encryptedMessage,
       });
 
       // Immediately show own sent message
       setChats((prev) => [
         ...prev,
-        { sender: sender.username, receiver: receiver.username, message },
+        {
+          sender: sender.username,
+          receiver: receiver.username,
+          message: message,
+        },
       ]);
     }
 

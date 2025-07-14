@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import ChatbotBar from "./ChatbotBar";
-import { use } from "react";
 
 const ChatWithAIArea = () => {
   const [input, setInput] = useState("");
