@@ -33,7 +33,7 @@ const ChatbotBar = () => {
       {/* User Details */}
       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
         <p style={{ fontSize: "16px", fontWeight: "500", color: "white" }}>
-          Jarvis
+          ChatBot
         </p>
         <p style={{ fontSize: "12px", color: "lightgrey" }}>Open AI</p>
       </div>
