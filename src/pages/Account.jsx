@@ -12,6 +12,7 @@ const Account = () => {
   const [completedTasks, setCompletedTasks] = useState([]);
   const [uncompletedTasks, setUncompletedTasks] = useState([]);
 
+  // Fetch user data
   const fetchUser = useCallback(async () => {
     try {
       const response = await axios.get(`${url}/isauthuser`, {
@@ -23,6 +24,7 @@ const Account = () => {
     }
   }, []);
 
+  // Fetch tasks data
   const fetchTasks = useCallback(async () => {
     try {
       const response = await axios.get(`${url}/tasks`, {
