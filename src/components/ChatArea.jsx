@@ -7,7 +7,7 @@ import UserBar from "./UserBar";
 import socket from "./socket";
 import CryptoJS from "crypto-js";
 
-const SECRET_KEY = "my_super_secret_key_123";
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
 const ChatArea = ({ receiver, isTeam }) => {
   const url = import.meta.env.VITE_BACKEND_URL;
