@@ -9,7 +9,7 @@ const ChatbotBar = () => {
         height: "5rem",
         paddingLeft: "1.5rem",
         cursor: "pointer",
-        backgroundColor: "#9966CC",
+        backgroundColor: "#3d7aae",
         gap: "1rem",
       }}
     >
