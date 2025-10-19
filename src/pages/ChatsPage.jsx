@@ -5,7 +5,6 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import UserBar from "../components/UserBar";
 import ChatArea from "../components/ChatArea";
 import axios from "axios";
-import ChatbotBar from "../components/ChatbotBar";
 
 const ChatsPage = () => {
   const url = import.meta.env.VITE_BACKEND_URL;
