@@ -1,10 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React from "react";
 import Sidebar from "../components/Sidebar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import UserBar from "../components/UserBar";
-import ChatArea from "../components/ChatArea";
-import axios from "axios";
 import ChatbotBar from "../components/ChatbotBar";
 import ChatWithAIArea from "../components/ChatWithAIArea";
 
