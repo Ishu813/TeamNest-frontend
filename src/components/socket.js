@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
+import { API_URL } from "../config";
 
-const url = import.meta.env.VITE_BACKEND_URL;
-const socket = io(url, {
+const socket = io(API_URL, {
   transports: ["websocket", "polling"],
   withCredentials: true,
 });

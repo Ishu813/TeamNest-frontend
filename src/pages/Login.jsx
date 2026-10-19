@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -155,7 +155,7 @@ const Login = () => {
         </Box>
 
         <p>
-          Don't have an account? <a href="/signup">Register</a>
+          Don&apos;t have an account? <a href="/signup">Register</a>
         </p>
         <p style={{ marginTop: "auto", padding: "1rem" }}>
           &copy; 2025 TeamNest Crafted with &#x2764;&#xfe0f; by Ishu Agrawal

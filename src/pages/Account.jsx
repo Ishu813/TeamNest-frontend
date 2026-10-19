@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
 import axios from "axios";
+import { API_URL } from "../config";
 import TaskBar from "../components/TaskBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
 const Account = () => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [user, setUser] = useState();
   const [tasks, setTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
@@ -15,11 +15,11 @@ const Account = () => {
   // Fetch user data
   const fetchUser = useCallback(async () => {
     try {
-      const response = await axios.get(`${url}/isauthuser`, {
+      const response = await axios.get(`${API_URL}/isauthuser`, {
         withCredentials: true,
       });
       setUser(response.data.user);
-    } catch (error) {
+    } catch {
       console.log("Unauthorized");
     }
   }, []);
@@ -27,14 +27,14 @@ const Account = () => {
   // Fetch tasks data
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await axios.get(`${url}/tasks`, {
+      const response = await axios.get(`${API_URL}/tasks`, {
         withCredentials: true,
       });
       setTasks(response.data);
-    } catch (error) {
+    } catch {
       console.log("Unauthorized");
     }
-  }, []);
+  }, [API_URL]);
 
   useEffect(() => {
     fetchUser();
@@ -53,11 +53,11 @@ const Account = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${url}/logout`, {
+      await axios.get(`${API_URL}/logout`, {
         withCredentials: true,
       });
       window.location.href = "/";
-    } catch (error) {
+    } catch {
       console.log("Log Out failed");
     }
   };

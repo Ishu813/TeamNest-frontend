@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,7 +16,7 @@ const TaskBar = ({ task }) => {
       await axios.patch(
         `${url}/tasks`,
         { taskId: task._id, isDone: newIsDone },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       window.location.reload();
     } catch (error) {
@@ -28,7 +28,7 @@ const TaskBar = ({ task }) => {
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
+      "Are you sure you want to delete this task?",
     );
     if (!confirmed) return;
 
@@ -36,7 +36,7 @@ const TaskBar = ({ task }) => {
       await axios.post(
         `${url}/tasks/delete`,
         { id: task._id },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       window.location.reload();
     } catch (error) {

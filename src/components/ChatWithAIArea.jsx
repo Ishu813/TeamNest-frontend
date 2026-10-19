@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import ChatbotBar from "./ChatbotBar";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ChatWithAIArea = () => {
+  const url = import.meta.env.VITE_BACKEND_URL;
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
 
@@ -12,25 +15,16 @@ const ChatWithAIArea = () => {
     e.preventDefault();
     setMessages((prev) => [...prev, { user: input, bot: "..." }]); // Optimistically add user message
 
-    const response = await axios.post(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        model: "openai/gpt-3.5-turbo-16K", // You can also use "mistralai/mistral-7b-instruct"
-        messages: [{ role: "user", content: input }],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`, // Ensure you have set this in your .env file
-          "Content-Type": "application/json",
-          "X-Title": "MyGPTChatApp", // Optional app name
-        },
-      }
-    );
+    try {
+      const response = await axios.post(`${url}/chats/ai`, {
+        withCredentials: true,
+        message: input,
+      });
+      setMessages([...messages, { user: input, bot: response.data.reply }]);
+    } catch (err) {
+      console.error("Error fetching chats:", err);
+    }
 
-    setMessages([
-      ...messages,
-      { user: input, bot: response.data.choices[0].message.content },
-    ]);
     setInput("");
   };
 
@@ -107,7 +101,9 @@ const ChatWithAIArea = () => {
                     <p style={{ paddingBottom: "1rem", opacity: "0.5" }}>
                       ChatBot
                     </p>
-                    <p>{message.bot}</p>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message.bot}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>

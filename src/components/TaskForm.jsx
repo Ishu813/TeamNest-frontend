@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import InputLabel from "@mui/material/InputLabel";
@@ -9,14 +9,14 @@ import axios from "axios";
 
 const TaskForm = ({ project }) => {
   const url = import.meta.env.VITE_BACKEND_URL;
-  if (!project || !project.team || !project.team.members) {
-    return null;
-  }
-
   const [content, setContent] = useState("");
   const [assignTo, setAssignTo] = useState("");
   const [deadline, setDeadline] = useState("");
   const [loading, setLoading] = useState(false);
+
+  if (!project || !project.team || !project.team.members) {
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,18 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from "axios";
 
 const ProjectForm = ({ team }) => {
   const url = import.meta.env.VITE_BACKEND_URL;
-  if (!team) {
-    return null;
-  }
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [showProjectsForm, setShowProjectsForm] = useState(false);
+
+  if (!team) {
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const ProjectForm = ({ team }) => {
           deadline: deadline,
           team: team._id,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       setShowProjectsForm(false);
       window.location.reload();

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import { API_URL } from "../config";
 import TeamBar from "../components/TeamBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -9,7 +10,6 @@ import TaskForm from "../components/TaskForm";
 import TaskBar from "../components/TaskBar";
 
 const ProjectsPage = () => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [team, setTeam] = useState(null);
   const [teams, setTeams] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -22,8 +22,8 @@ const ProjectsPage = () => {
     const fetchData = async () => {
       try {
         const [teamsRes, projectsRes] = await Promise.all([
-          axios.get(`${url}/teams`, { withCredentials: true }),
-          axios.get(`${url}/projects`, { withCredentials: true }),
+          axios.get(`${API_URL}/teams`, { withCredentials: true }),
+          axios.get(`${API_URL}/projects`, { withCredentials: true }),
         ]);
         setTeams(teamsRes.data);
         setProjects(projectsRes.data);
@@ -36,7 +36,7 @@ const ProjectsPage = () => {
 
   const fetchProjectTasks = async (projectId) => {
     try {
-      const response = await axios.get(`${url}/tasks?projectId=${projectId}`, {
+      const response = await axios.get(`${API_URL}/tasks?projectId=${projectId}`, {
         withCredentials: true,
       });
       return response.data;
@@ -56,7 +56,7 @@ const ProjectsPage = () => {
   const handleDelete = async (project) => {
     try {
       await axios.post(
-        `${url}/projects/delete`,
+        `${API_URL}/projects/delete`,
         { id: project._id },
         { withCredentials: true }
       );

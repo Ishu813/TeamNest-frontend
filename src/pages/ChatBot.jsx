@@ -1,4 +1,3 @@
-import React from "react";
 import Sidebar from "../components/Sidebar";
 import ChatbotBar from "../components/ChatbotBar";
 import ChatWithAIArea from "../components/ChatWithAIArea";

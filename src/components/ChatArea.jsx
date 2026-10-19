@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { API_URL } from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import TeamBar from "./TeamBar";
@@ -10,7 +11,6 @@ import CryptoJS from "crypto-js";
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
 const ChatArea = ({ receiver, isTeam }) => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [message, setMessage] = useState("");
   const [sender, setSender] = useState();
   const [chats, setChats] = useState([]);
@@ -20,7 +20,7 @@ const ChatArea = ({ receiver, isTeam }) => {
     try {
       const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
       return bytes.toString(CryptoJS.enc.Utf8);
-    } catch (error) {
+    } catch {
       return "Decryption Failed";
     }
   };
@@ -29,12 +29,12 @@ const ChatArea = ({ receiver, isTeam }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${url}/isauthuser`, {
+        const response = await axios.get(`${API_URL}/isauthuser`, {
           withCredentials: true,
         });
         setSender(response.data.user);
       } catch (error) {
-        console.log("Unauthorized");
+        console.log("Unauthorized", error);
       }
     };
     fetchUser();
@@ -44,7 +44,7 @@ const ChatArea = ({ receiver, isTeam }) => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const res = await axios.get(`${url}/chats`, {
+        const res = await axios.get(`${API_URL}/chats`, {
           withCredentials: true,
         });
 
@@ -59,7 +59,7 @@ const ChatArea = ({ receiver, isTeam }) => {
       }
     };
     fetchChats();
-  }, []);
+  }, [API_URL]);
 
   // Handle private messages
   useEffect(() => {
@@ -116,8 +116,8 @@ const ChatArea = ({ receiver, isTeam }) => {
             (chat.receiver === receiver.username &&
               chat.sender === sender.username) ||
             (chat.receiver === sender.username &&
-              chat.sender === receiver.username)
-        )
+              chat.sender === receiver.username),
+        ),
       );
     } else {
       setReceiverChats(chats.filter((chat) => chat.teamId === receiver._id));
@@ -131,7 +131,7 @@ const ChatArea = ({ receiver, isTeam }) => {
 
     const encryptedMessage = CryptoJS.AES.encrypt(
       message,
-      SECRET_KEY
+      SECRET_KEY,
     ).toString();
 
     if (isTeam) {

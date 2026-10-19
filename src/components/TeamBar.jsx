@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import UserBar from "./UserBar";
 
 const TeamBar = ({ team, showMem }) => {
-  if (!team) return null;
-
   const [showMembers, setShowMembers] = useState(false);
+
+  if (!team) return null;
 
   return (
     <div

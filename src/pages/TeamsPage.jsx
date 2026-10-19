@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Sidebar from "../components/Sidebar";
+import { API_URL } from "../config";
 import UserBar from "../components/UserBar";
 import ChatArea from "../components/ChatArea";
 import { Checkbox, FormControlLabel, Button, TextField } from "@mui/material";
@@ -7,7 +8,6 @@ import axios from "axios";
 import TeamBar from "../components/TeamBar";
 
 const TeamsPage = () => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [team, setTeam] = useState();
   const [teamName, setTeamName] = useState("");
   const [teams, setTeams] = useState([]);
@@ -16,34 +16,34 @@ const TeamsPage = () => {
   const [isChecked, setIsChecked] = useState({});
   const [error, setError] = useState(null);
 
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
-      const response = await axios.get(`${url}/teams`, {
+      const response = await axios.get(`${API_URL}/teams`, {
         withCredentials: true,
       });
       setTeams(response.data);
-    } catch (error) {
+    } catch {
       setError("Failed to load teams. Please try again later.");
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     fetchTeams();
-  }, []);
+  }, [fetchTeams]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${url}/users`, {
+        const response = await axios.get(`${API_URL}/users`, {
           withCredentials: true,
         });
         setUsers(response.data);
-      } catch (error) {
+      } catch {
         console.log("Unauthorized");
       }
     };
     fetchUsers();
-  }, []);
+  }, [API_URL]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ const TeamsPage = () => {
 
     try {
       await axios.post(
-        `${url}/teams`,
+        `${API_URL}/teams`,
         {
           teamName,
           members: checkedUserIds.map((userId) => ({ user: userId })),

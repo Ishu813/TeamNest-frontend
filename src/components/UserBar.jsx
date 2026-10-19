@@ -1,5 +1,3 @@
-import React from "react";
-
 const UserBar = ({ user }) => {
   if (!user) return null;
 

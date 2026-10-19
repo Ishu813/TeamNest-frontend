@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Sidebar from "../components/Sidebar";
+import { API_URL } from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import UserBar from "../components/UserBar";
@@ -7,7 +8,6 @@ import ChatArea from "../components/ChatArea";
 import axios from "axios";
 
 const Search = () => {
-  const url = import.meta.env.VITE_BACKEND_URL;
   const [users, setUsers] = useState([]);
   const [receiver, setReceiver] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,7 +15,7 @@ const Search = () => {
   // Fetch Users
   const fetchUsers = useCallback(async () => {
     try {
-      const response = await axios.get(`${url}/users`, {
+      const response = await axios.get(`${API_URL}/users`, {
         withCredentials: true,
       });
       setUsers(response.data);
